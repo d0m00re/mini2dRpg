@@ -1,39 +1,161 @@
-
-
-export function drawbase(ctx : CanvasRenderingContext2D) {
-  ctx.fillStyle = 'rgb(200, 0, 0)';
-  ctx.fillRect(10, 10, 50, 50);
-
-  ctx.fillStyle = 'rgba(0, 0, 200, 0.5)';
-  ctx.fillRect(30, 30, 50, 50);
-}
-
 interface IVec2d {
   x : number;
   y : number;
 }
 
-// draw 10 on 10 map carry
-export function drawMap(ctx : CanvasRenderingContext2D,
-                        dim : IVec2d,
-                        nbCase : IVec2d) {
+// player position
+type T_DIR = 'NONE' | 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'; 
 
-  const colorArr = ["red", "blue"]
-  const widthCase = dim.x / nbCase.x;
-  const heightCase = dim.y / nbCase.y;
- 
-  for (let y = 0; y < nbCase.y; y++) {
-    for (let x = 0; x < nbCase.x; x++) {
-      ctx.fillStyle = colorArr[((x + y) % 2)];
-      ctx.fillRect(widthCase * x, heightCase * y,
-                  widthCase * (x+1), heightCase * (y+1));
+// event handler
+class KeyboardEventHandler {
+  private _dir : T_DIR;
+
+  constructor () {
+    this._dir = 'NONE'
+  }
+
+  get dir() : T_DIR { return this._dir}
+  set dir(dir : T_DIR) {this._dir = dir}
+/*
+  document.addEventListener('keydown', (event : any) => {
+
+  })
+*/
+};
+
+
+
+
+class Player {
+  private _pos : IVec2d;
+  private _color : string;
+  constructor (pos : IVec2d, color : string) {
+    this._pos = pos;
+    this._color = color;
+  }
+
+  get pos() : IVec2d { return this._pos}
+  set pos(pos : IVec2d) {this._pos = pos}
+
+  get color() : string { return this._color}
+  set color(color : string) {this._color = color}
+
+  moove(dir : T_DIR) {
+    switch(dir) {
+      case 'TOP':
+        this._pos.y -= 1;
+        break;
+      case 'BOTTOM':
+        this._pos.y += 1;
+        break;
+      case 'LEFT':
+        this._pos.x -= 1;
+        break;
+      case 'RIGHT':
+        this._pos.x += 1;
+        break;
     }
   }
 }
 
 
+// map management
+interface IMap2d {
+  _map : number[][];
+  color : string[];
+}
+
+const map2d : IMap2d = {
+  _map : [
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1],
+  ],
+  color : ["white", "black"]
+}
+
+export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
+                          mapData : IMap2d, player : Player) {
+
+    let dimCase : IVec2d = {x : mapData._map[0].length, y : mapData._map.length};
+
+    const widthCase = dim.x / dimCase.x;
+    const heightCase = dim.y / dimCase.y;
+
+    console.log(widthCase, ' ', heightCase);                
+
+    // base map
+    for (let y = 0; y < dimCase.y; y++) {
+      for (let x = 0; x < dimCase.x; x++) {
+        ctx.fillStyle = mapData.color[mapData._map[y][x]];
+        ctx.fillRect(widthCase * x, heightCase * y,
+        widthCase, heightCase);
+      }
+    }
+
+    // draw color on it 
+    
+    ctx.fillStyle = player.color;
+    let baseX = widthCase * player.pos.x;
+    let baseY = heightCase * player.pos.y;
+    ctx.fillRect(baseX, baseY,
+                widthCase, heightCase);
+    console.log("Draw player : ", baseX, baseY, widthCase, heightCase)
+}
+
+function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMap2d, player : Player, keyboardEvent : KeyboardEventHandler) {
+  // update game state
+
+  // position update
+  //player.pos.x += 1;
+  
+  player.moove(keyboardEvent.dir);
+  // render update
+  render(ctx, dim, mapData, player);//{x : 100, y : 100});
+  requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent));
+}
+
+
 export function initCanvas() {
-  var canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  let canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  let player = new Player({ x: 5, y : 5}, 'green');
+
+  let eventHandler = new KeyboardEventHandler();
+// manage event handler
+  document.addEventListener("keydown", (event) => {
+    let key = event.key;
+
+    switch(key) {
+      case 'ArrowUp' :
+        eventHandler.dir = 'TOP';
+      break;
+      case 'ArrowDown' :
+        eventHandler.dir = 'BOTTOM';
+
+      break;
+      case 'ArrowLeft' :
+        eventHandler.dir = 'LEFT';
+
+      break;
+      case 'ArrowRight' :
+        eventHandler.dir = 'RIGHT';
+
+      break;
+    }
+    console.log("keydown")
+
+  })
+  document.addEventListener("keyup", () => {
+    eventHandler.dir ='NONE';
+  })
+
 
   if (!canvas)
   {
@@ -48,8 +170,11 @@ export function initCanvas() {
     console.log("error init ctx");
     return ;
   }
-  drawMap(ctx, {x : canvas.width, y : canvas.height}, {x : 100, y : 100});
- }
+    //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
+    //@ts-ignore
+    requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, map2d, player, eventHandler));
+
+}
 }
 
 initCanvas();
