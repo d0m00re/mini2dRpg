@@ -23,8 +23,7 @@ class KeyboardEventHandler {
 */
 };
 
-
-
+//
 
 class Player {
   private _pos : IVec2d;
@@ -40,21 +39,27 @@ class Player {
   get color() : string { return this._color}
   set color(color : string) {this._color = color}
 
-  moove(dir : T_DIR) {
+  futurPos(dir : T_DIR) {
+    let pos = {...(this._pos)};
     switch(dir) {
       case 'TOP':
-        this._pos.y -= 1;
+        pos.y -= 1;
         break;
       case 'BOTTOM':
-        this._pos.y += 1;
+        pos.y += 1;
         break;
       case 'LEFT':
-        this._pos.x -= 1;
+        pos.x -= 1;
         break;
       case 'RIGHT':
-        this._pos.x += 1;
+        pos.x += 1;
         break;
     }
+    return pos;
+  }
+
+  moove(dir : T_DIR) {
+    this._pos = this.futurPos(dir);
   }
 }
 
@@ -116,7 +121,10 @@ function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMa
   // position update
   //player.pos.x += 1;
   
-  player.moove(keyboardEvent.dir);
+  // physics check
+  let futurpos = player.futurPos(keyboardEvent.dir);
+  if (mapData._map[futurpos.y][futurpos.x] !== 1)
+    player.moove(keyboardEvent.dir);
   // render update
   render(ctx, dim, mapData, player);//{x : 100, y : 100});
   requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent));
@@ -173,7 +181,6 @@ export function initCanvas() {
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, map2d, player, eventHandler));
-
 }
 }
 
