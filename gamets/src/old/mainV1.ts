@@ -72,15 +72,16 @@ interface IMap2d {
 
 const map2d : IMap2d = {
   _map : [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1],
   ],
   color : ["white", "black"]
 }
@@ -114,42 +115,19 @@ export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
     console.log("Draw player : ", baseX, baseY, widthCase, heightCase)
 }
 
-
-let fps : number = 60;
-let fpsInterval : number;
-let startTime : number;
-let now : number;
-let then : number;
-let elapsed : number;
-
-function initAnimation() {
-  fpsInterval = 1000 / fps;
-  then = performance.now();//Date.now();
-  startTime = then;
-  console.log(startTime);
-}
-
 function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMap2d, player : Player, keyboardEvent : KeyboardEventHandler) {
-  // request another animation frame
-  requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent));
- 
-  now = performance.now();//Date.now();
-  elapsed = now - then;
-  //fpsInterval, startTime, now, then, elapsed;
   // update game state
 
   // position update
+  //player.pos.x += 1;
   
   // physics check
-  if (elapsed > fpsInterval) {
-    then = now - (elapsed % fpsInterval);
-
-    let futurpos = player.futurPos(keyboardEvent.dir);
-    if (mapData._map[futurpos.y][futurpos.x] !== 1)
-      player.moove(keyboardEvent.dir);
-    // render update
-    render(ctx, dim, mapData, player);//{x : 100, y : 100});
-  }
+  let futurpos = player.futurPos(keyboardEvent.dir);
+  if (mapData._map[futurpos.y][futurpos.x] !== 1)
+    player.moove(keyboardEvent.dir);
+  // render update
+  render(ctx, dim, mapData, player);//{x : 100, y : 100});
+  requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent));
 }
 
 
@@ -194,7 +172,7 @@ export function initCanvas() {
   }
 
  if (canvas.getContext) {
-   let ctx = canvas.getContext("2d");
+   var ctx = canvas.getContext("2d");
    if (!ctx)
   {
     console.log("error init ctx");
@@ -202,7 +180,6 @@ export function initCanvas() {
   }
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
-    initAnimation();
     requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, map2d, player, eventHandler));
 }
 }
