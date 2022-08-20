@@ -1,108 +1,51 @@
-interface IVec2d {
-  x : number;
-  y : number;
-}
+import {textureMapper, firstMap, TMap2D} from './core/MapSystem/layerFloorWall';
+import * as typesBase from "./core/types/base.d";
+import Player from './core/entities/Player';
+import Enemy from './core/entities/Enemy';
 
-// player position
-type T_DIR = 'NONE' | 'TOP' | 'RIGHT' | 'BOTTOM' | 'LEFT'; 
 
 // event handler
 class KeyboardEventHandler {
-  private _dir : T_DIR;
+  private _dir : typesBase.T_DIR;
 
   constructor () {
     this._dir = 'NONE'
   }
 
-  get dir() : T_DIR { return this._dir}
-  set dir(dir : T_DIR) {this._dir = dir}
-/*
-  document.addEventListener('keydown', (event : any) => {
-
-  })
-*/
+  get dir() : typesBase.T_DIR { return this._dir}
+  set dir(dir : typesBase.T_DIR) {this._dir = dir}
 };
 
 //
 
-class Player {
-  private _pos : IVec2d;
-  private _color : string;
-  constructor (pos : IVec2d, color : string) {
-    this._pos = pos;
-    this._color = color;
-  }
-
-  get pos() : IVec2d { return this._pos}
-  set pos(pos : IVec2d) {this._pos = pos}
-
-  get color() : string { return this._color}
-  set color(color : string) {this._color = color}
-
-  futurPos(dir : T_DIR) {
-    let pos = {...(this._pos)};
-    switch(dir) {
-      case 'TOP':
-        pos.y -= 1;
-        break;
-      case 'BOTTOM':
-        pos.y += 1;
-        break;
-      case 'LEFT':
-        pos.x -= 1;
-        break;
-      case 'RIGHT':
-        pos.x += 1;
-        break;
-    }
-    return pos;
-  }
-
-  moove(dir : T_DIR) {
-    this._pos = this.futurPos(dir);
-  }
-}
 
 
-// map management
-interface IMap2d {
-  _map : number[][];
-  color : string[];
-}
+export function render(ctx : CanvasRenderingContext2D, dim : typesBase.IVec2d,
+                          mapData : TMap2D, player : Player,  enemyList : Enemy[]) {
 
-const map2d : IMap2d = {
-  _map : [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  ],
-  color : ["white", "black"]
-}
-
-export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
-                          mapData : IMap2d, player : Player) {
-
-    let dimCase : IVec2d = {x : mapData._map[0].length, y : mapData._map.length};
+    let dimCase : typesBase.IVec2d = {x : mapData[0].length, y : mapData.length};
 
     const widthCase = dim.x / dimCase.x;
     const heightCase = dim.y / dimCase.y;
 
     console.log(widthCase, ' ', heightCase);                
 
-    // base map
+    // base map render
     for (let y = 0; y < dimCase.y; y++) {
       for (let x = 0; x < dimCase.x; x++) {
-        ctx.fillStyle = mapData.color[mapData._map[y][x]];
+        ctx.fillStyle = textureMapper[mapData[y][x]].color;
         ctx.fillRect(widthCase * x, heightCase * y,
         widthCase, heightCase);
       }
     }
+
+    // enemy rendering
+    for (let x = 0; x < enemyList.length; x++) {
+      ctx.fillStyle = enemyList[x].color;
+      ctx.fillRect(widthCase * enemyList[x].pos.x, heightCase * enemyList[x].pos.y,
+      widthCase, heightCase);
+    }
+
 
     // draw color on it 
     
@@ -115,7 +58,7 @@ export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
 }
 
 
-let fps : number = 60;
+let fps : number = 30;
 let fpsInterval : number;
 let startTime : number;
 let now : number;
@@ -129,9 +72,9 @@ function initAnimation() {
   console.log(startTime);
 }
 
-function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMap2d, player : Player, keyboardEvent : KeyboardEventHandler) {
+function runGameLoop(ctx : CanvasRenderingContext2D, dim : typesBase.IVec2d, mapData : TMap2D, player : Player, keyboardEvent : KeyboardEventHandler, enemyList : Enemy[]) {
   // request another animation frame
-  requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent));
+  requestAnimationFrame(() => runGameLoop(ctx, dim, mapData, player, keyboardEvent, enemyList));
  
   now = performance.now();//Date.now();
   elapsed = now - then;
@@ -145,17 +88,24 @@ function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMa
     then = now - (elapsed % fpsInterval);
 
     let futurpos = player.futurPos(keyboardEvent.dir);
-    if (mapData._map[futurpos.y][futurpos.x] !== 1)
+    if (textureMapper[mapData[futurpos.y][futurpos.x]].solid === false
+      && enemyList.findIndex(enemy => (enemy.pos.x === futurpos.x && enemy.pos.y === futurpos.y)) < 0)
       player.moove(keyboardEvent.dir);
     // render update
-    render(ctx, dim, mapData, player);//{x : 100, y : 100});
+    render(ctx, dim, mapData, player, enemyList);//{x : 100, y : 100});
   }
 }
 
 
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  let player = new Player({ x: 5, y : 5}, 'green');
+  let player = new Player({ x: 5, y : 5}, 'green', 10, 5);
+  let enemyList : Enemy[] = [];
+
+  enemyList.push(new Enemy({ x: 3, y : 3}, 'red', 10, 5));
+  enemyList.push(new Enemy({ x: 6, y : 6}, 'red', 10, 5));
+  enemyList.push(new Enemy({ x: 7, y : 7}, 'red', 10, 5));
+
 
   let eventHandler = new KeyboardEventHandler();
 // manage event handler
@@ -179,8 +129,6 @@ export function initCanvas() {
 
       break;
     }
-    console.log("keydown")
-
   })
   document.addEventListener("keyup", () => {
     eventHandler.dir ='NONE';
@@ -203,7 +151,7 @@ export function initCanvas() {
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();
-    requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, map2d, player, eventHandler));
+    requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, firstMap.map2d, player, eventHandler, enemyList));
 }
 }
 

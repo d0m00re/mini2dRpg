@@ -1,0 +1,21 @@
+/*
+7 couches au total -> A B C D E et Sprite (événements / trigger / action / teleportation, enfin tout ce qui est pas que du décor)
+0 = panaroma (image de fond entre autre)
+A = sol et mur
+B = Décoration murale / végétations
+C = mobilier / extension de B
+D = Artifices divers (genre du mobilier sur la table ou des petites plantes / panneaux)
+E = poubelle autre lol tu mets ce que tu veux
+R = région (ce n'est pas du visuelle, mais c'est des cases transparentes où, si tu passes dessus, tu actionnes un morceau de code, utile pour les sols de lave par exemple)
+Sprite (expliqué au dessus)
+*/
+
+# Multylayer map system
+
+-> layer 0 : background layer - one image background (later applied special effect)
+-> layer 1 : tile placement
+-> layer 2 : tile decoration layer
+-> layer 3 : base map collision layer
+-> layer 4 : event layer with mob, and other thing
+
+layer 0,1,2
