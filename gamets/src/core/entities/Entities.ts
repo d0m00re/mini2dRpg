@@ -5,18 +5,21 @@ class Entities {
     private _color : string;
 
     private _life : number;
+    private _maxLife : number;
     private _dmg : number;
 
     constructor (
         pos : typesBase.IVec2d,
         color : string,
         dmg : number,
-        life : number
+        life : number,
+        maxLife : number
         ) {
       this._pos = pos;
       this._color = color;
       this._dmg = dmg;
       this._life = life;
+      this._maxLife = maxLife;
     }
   
     get pos() : typesBase.IVec2d { return this._pos}
@@ -30,6 +33,9 @@ class Entities {
 
     get life() : number { return this._life}
     set life(life : number) {this._life = life}
+
+    get maxLife() : number { return this._maxLife}
+    set maxLife(maxLife : number) {this._maxLife = maxLife}
 
     futurPos(dir : typesBase.T_DIR) {
       let pos = {...(this._pos)};
