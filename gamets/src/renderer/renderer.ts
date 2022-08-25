@@ -51,9 +51,10 @@ const renderUiBottom = (ctx : CanvasRenderingContext2D, bottomUiInfo : IUIElemen
 
 
   // draw color on it
-  canvasService.drawText(ctx, `Life ${player.life}/${player.maxLife}`, "blue",
-                    {x : bottomUiInfo.pos.x + 50, y : bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 + 10)});
-  
+  canvasService.drawText(ctx, `Life : ${player.life}/${player.maxLife}`, "blue",
+                    {x : bottomUiInfo.pos.x + 50, y : bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 )});
+  canvasService.drawText(ctx, `Dmg : ${player.dmg}`, "blue",
+                    {x : bottomUiInfo.pos.x + 50, y : bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 + 50)});
 } 
 
 const renderPlayer = (ctx : CanvasRenderingContext2D, player : Player, tileDim : typesBase.IVec2d) => {
