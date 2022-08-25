@@ -4,6 +4,9 @@ import Player from './core/entities/Player';
 import Enemy from './core/entities/Enemy';
 import * as canvasService from './services/canvas';
 import KeyboardEventHandler from './services/eventHandler/KeyboardEventHandler';
+import * as imgPlayer from './core/texture/playerTexture';
+import * as imgMob from './core/texture/mobTexture'
+
 // BASE VARIABLE
 let fps : number = 30;
 let fpsInterval : number;
@@ -26,8 +29,12 @@ const renderMap = (ctx : CanvasRenderingContext2D,
   for (let y = 0; y < dimCase.y; y++) {
     for (let x = 0; x < dimCase.x; x++) {
       ctx.fillStyle = textureMapper[mapData[y][x]].color;
-      ctx.fillRect(tileDim.x * x, tileDim.y * y,
-        tileDim.x, tileDim.y);
+      //ctx.fillRect(tileDim.x * x, tileDim.y * y,
+      //  tileDim.x, tileDim.y);
+      canvasService.drawImg(ctx,
+        textureMapper[mapData[y][x]].img,
+        {x : tileDim.x * x, y : tileDim.y * y},
+        { x: tileDim.x, y : tileDim.y});
     }
   }
 }
@@ -37,9 +44,15 @@ const renderEnemy = (ctx : CanvasRenderingContext2D,
                     tileDim : typesBase.IVec2d) => {
   // enemy rendering
   for (let x = 0; x < enemyList.length; x++) {
-    ctx.fillStyle = enemyList[x].color;
-    ctx.fillRect(tileDim.x * enemyList[x].pos.x, tileDim.y * enemyList[x].pos.y,
-      tileDim.x, tileDim.y);
+    let enemy = enemyList[x];
+    let targetPos : typesBase.IVec2d = {x : tileDim.x * enemy.pos.x, y : tileDim.y * enemy.pos.y}
+    ctx.fillStyle = enemy.color;
+  //  ctx.fillRect(targetPos.x, targetPos.y, tileDim.x, tileDim.y);
+    canvasService.drawImg(ctx, enemy.img, targetPos, tileDim);
+    canvasService.drawText(ctx, `${enemy.life}`, 'white', {
+      x : targetPos.x + 10,
+      y : targetPos.y + (tileDim.y / 2)
+    }, '30px');
   }
 }
 
@@ -51,14 +64,17 @@ const renderUiBottom = (ctx : CanvasRenderingContext2D, bottomUiInfo : IUIElemen
   canvasService.drawText(ctx, `Life ${player.life}/${player.maxLife}`, "blue",
                     {x : bottomUiInfo.pos.x + 50, y : bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 + 10)});
   
-}
+} 
 
 const renderPlayer = (ctx : CanvasRenderingContext2D, player : Player, tileDim : typesBase.IVec2d) => {
     ctx.fillStyle = player.color;
     let baseX = tileDim.x * player.pos.x;
     let baseY = tileDim.y * player.pos.y;
-    ctx.fillRect(baseX, baseY,
-      tileDim.x, tileDim.y);
+//    ctx.fillRect(baseX, baseY,
+//      tileDim.x, tileDim.y);
+
+    canvasService.drawImg(ctx, player.img, {x : baseX, y : baseY}, tileDim);
+
 }
 
 export function render(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2d,
@@ -97,14 +113,11 @@ export function render(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVe
     // draw player
     renderPlayer(ctx, player, tileDim)
 
-    ctx.fillStyle = player.color;
-    let baseX = tileDim.x * player.pos.x;
-    let baseY = tileDim.y * player.pos.y;
-    ctx.fillRect(baseX, baseY, tileDim.x, tileDim.y);
+ //   ctx.fillStyle = player.color;
+ //   let baseX = tileDim.x * player.pos.x;
+ //   let baseY = tileDim.y * player.pos.y;
+  //  ctx.fillRect(baseX, baseY, tileDim.x, tileDim.y);
  }
-
-
-
 
 function initAnimation() {
   fpsInterval = 1000 / fps;
@@ -125,9 +138,30 @@ function runGameLoop(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2
     then = now - (elapsed % fpsInterval);
 
     let futurpos = player.futurPos(keyboardEvent.dir);
+    // moove player
     if (textureMapper[mapData[futurpos.y][futurpos.x]].solid === false
       && enemyList.findIndex(enemy => (enemy.pos.x === futurpos.x && enemy.pos.y === futurpos.y)) < 0)
       player.moove(keyboardEvent.dir);
+
+    // attack management
+  
+    const findIndexEnemy = enemyList.findIndex(elem => elem.pos.x === futurpos.x && elem.pos.y === futurpos.y);
+  
+    // find index of enemy
+    if (findIndexEnemy > -1) {
+       enemyList[findIndexEnemy].life -= player.dmg;
+      player.life -= enemyList[findIndexEnemy].dmg;
+
+      if (!enemyList[findIndexEnemy].isAlive) {
+        // find pos where add hour peaple
+        let posMob = {x : Math.floor(Math.random() * mapData[0].length),
+          y : Math.floor(Math.random() * mapData.length)}
+        enemyList.push(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
+      }
+      enemyList = enemyList.filter(enemy => enemy.life > 0)
+    }
+    
+
     // render update
     render(ctx, windowDim, mapData, player, enemyList);//{x : 100, y : 100});
   }
@@ -136,12 +170,12 @@ function runGameLoop(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2
 
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  let player = new Player({ x: 5, y : 5}, 'green', 10, 5, 20);
+  let player = new Player({ x: 5, y : 5}, 'green', 10, 5, 20, imgPlayer.player1);
   let enemyList : Enemy[] = [];
 
-  enemyList.push(new Enemy({ x: 3, y : 3}, 'red', 10, 5, 5));
-  enemyList.push(new Enemy({ x: 6, y : 6}, 'red', 10, 5, 5));
-  enemyList.push(new Enemy({ x: 7, y : 7}, 'red', 10, 5, 5));
+  enemyList.push(new Enemy({ x: 3, y : 3}, 'red', 0.5, 5, 5, imgMob.mob1));
+  enemyList.push(new Enemy({ x: 6, y : 6}, 'red', 0.5, 50, 50, imgMob.mob2));
+  enemyList.push(new Enemy({ x: 7, y : 7}, 'red', 0.5, 5, 5, imgMob.mob1));
 
 
   let eventHandler = new KeyboardEventHandler();
@@ -188,7 +222,7 @@ export function initCanvas() {
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();
-    requestAnimationFrame(() => runGameLoop(ctx, {x : canvas.width, y : canvas.height}, firstMap.map2d, player, eventHandler, enemyList));
+    requestAnimationFrame(() => {if(ctx) runGameLoop(ctx, {x : canvas.width, y : canvas.height}, firstMap.map2d, player, eventHandler, enemyList)});
 }
 }
 

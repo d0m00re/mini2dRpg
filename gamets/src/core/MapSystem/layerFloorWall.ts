@@ -1,6 +1,10 @@
+import * as texture from '../texture/mapTexture';
+
+
 export interface ILayerWallFloorTexture{
     solid : boolean;
     color : string;
+    img : HTMLImageElement;
     id : number;
 }
 
@@ -12,37 +16,11 @@ export interface IBaseLayerMap {
     map2d : number[][];
 }
 
-// INIT TEXTURE
-const FirstFloor : ILayerWallFloorTexture = {
-    solid : false,
-    color : "grey",
-    id : 0
-}
-
-const SecondFloor : ILayerWallFloorTexture = {
-    solid : false,
-    color : "yellow",
-    id : 2
-}
-
-const FirstWall : ILayerWallFloorTexture = {
-    solid : true,
-    color : "black",
-    id : 1
-}
-
-const SecondWall : ILayerWallFloorTexture = {
-    solid : true,
-    color : "orange",
-    id : 3
-}
-
 export const textureMapper = {
-    [FirstFloor.id] : FirstFloor,
-    [FirstWall.id] : FirstWall,
-    [SecondFloor.id] : SecondFloor,
-    [SecondWall.id] : SecondWall
-
+    [texture.FirstFloor.id] : texture.FirstFloor,
+    [texture.FirstWall.id] : texture.FirstWall,
+    [texture.SecondFloor.id] : texture.SecondFloor,
+    [texture.SecondWall.id] : texture.SecondWall
 }
 
 // INIT MAP
@@ -53,10 +31,10 @@ export const firstMap : IBaseLayerMap = {
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
     [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
     [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,3,2,2,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,3,2,2,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1],
-    [1,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,1],
+    [1,0,0,0,0,0,0,3,2,2,2,2,2,2,3,0,0,1],
+    [1,0,0,0,0,0,0,3,2,2,2,2,2,2,3,0,0,1],
+    [1,0,0,0,0,0,0,3,2,2,2,2,2,2,3,0,0,1],
+    [1,0,0,0,0,0,0,3,2,2,2,2,2,2,3,0,0,1],
+    [1,0,0,0,0,0,0,3,2,2,2,2,2,2,3,0,0,1],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ]}
