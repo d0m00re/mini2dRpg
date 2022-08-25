@@ -40,7 +40,7 @@ class Entities {
     get maxLife() : number { return this._maxLife}
     set maxLife(maxLife : number) {this._maxLife = maxLife}
 
-    get isAlive() : boolean { return this._life < 1}
+    get isAlive() : boolean { return this._life > 0}
 
     get img() : HTMLImageElement { return this._img}
     set img(img : HTMLImageElement) {this._img = img}
