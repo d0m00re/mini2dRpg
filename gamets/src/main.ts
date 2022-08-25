@@ -8,6 +8,15 @@ import * as imgMob from './core/texture/mobTexture'
 
 import renderer from './renderer/renderer';
 
+const C_CONFIG = {
+  player : { 
+    PLAYER_INIT_LIFE : 100,
+    PLAYER_MAX_LIFE : 100,
+    PLAYER_DMG : 40,
+    PLAYER_SKIN : imgPlayer.player1
+  }
+}
+
 // BASE VARIABLE
 let fps : number = 30;
 let fpsInterval : number;
@@ -25,6 +34,10 @@ function initAnimation() {
 
 // todo : ugly function need rework
 function runGameLoop(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2d, mapData : TMap2D, player : Player, keyboardEvent : KeyboardEventHandler, enemyList : Enemy[]) {
+  if (!player.isAlive) {
+    requestAnimationFrame(() => runGameLoop(ctx, windowDim, mapData, player, keyboardEvent, enemyList));
+  }
+  else {
   // request another animation frame
   requestAnimationFrame(() => runGameLoop(ctx, windowDim, mapData, player, keyboardEvent, enemyList));
  
@@ -71,12 +84,16 @@ function runGameLoop(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2
     // render update
     renderer(ctx, windowDim, mapData, player, enemyList);//{x : 100, y : 100});
   }
+  }
 }
 
+const runDeathScreen = () => {
+
+}
 
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  let player = new Player({ x: 5, y : 5}, 'green', 10, 5, 20, imgPlayer.player1);
+  let player = new Player({ x: 5, y : 5}, 'green', C_CONFIG.player.PLAYER_DMG, C_CONFIG.player.PLAYER_INIT_LIFE, C_CONFIG.player.PLAYER_MAX_LIFE, C_CONFIG.player.PLAYER_SKIN);
   let enemyList : Enemy[] = [];
 
   enemyList.push(new Enemy({ x: 3, y : 3}, 'red', 0.5, 5, 5, imgMob.mob1));
