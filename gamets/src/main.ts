@@ -1,4 +1,4 @@
-import {textureMapper, firstMap, TMap2D} from './core/MapSystem/layerFloorWall';
+import {textureMapper, firstMap, TMap2D, ILayerWallFloorTexture} from './core/MapSystem/layerFloorWall';
 import * as typesBase from "./core/types/base.d";
 import Player from './core/entities/Player';
 import Enemy from './core/entities/Enemy';
@@ -8,12 +8,23 @@ import * as imgMob from './core/texture/mobTexture'
 
 import renderer from './renderer/renderer';
 
+import * as canvasUtils from './services/canvas';
+
 const C_CONFIG = {
-  player : { 
+  PLAYER : { 
     PLAYER_INIT_LIFE : 100,
     PLAYER_MAX_LIFE : 100,
     PLAYER_DMG : 40,
     PLAYER_SKIN : imgPlayer.player1
+  }, 
+  MAP_CONFIG : {
+    MAP_HOME : {
+      NB_MOBS : 5,
+      MOB_GENERATOR : [() => {}, () => {}]
+    }
+  },
+  GAME_CONFIG : {
+
   }
 }
 
@@ -30,6 +41,11 @@ function initAnimation() {
   then = performance.now();//Date.now();
   startTime = then;
   console.log(startTime);
+}
+
+// todo : add mob and player
+const engine_check_is_empty_floor = (pos : typesBase.IVec2d, mapData : TMap2D, textureMapper : {[x: number]: ILayerWallFloorTexture}) => {
+  return (pos.x === -1 && pos.y === -1) || textureMapper[mapData[pos.y][pos.x]].solid
 }
 
 // todo : ugly function need rework
@@ -59,41 +75,44 @@ function runGameLoop(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2
     const findIndexEnemy = enemyList.findIndex(elem => elem.pos.x === futurpos.x && elem.pos.y === futurpos.y);
     
     // find index of enemy
-    if (findIndexEnemy > -1) {
+    if (findIndexEnemy > -1)
+    {
       console.log("find an enemy : ", findIndexEnemy)
       // enemy dmg
       enemyList[findIndexEnemy].life -= player.dmg;
       player.life -= enemyList[findIndexEnemy].dmg;
 
-      if (!enemyList[findIndexEnemy].isAlive) {
+      if (!enemyList[findIndexEnemy].isAlive)
+      {
         // find pos where add hour peaple
         let posMob = {x : -1, y : -1};
-        while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
-        posMob = {x : Math.floor(Math.random() * mapData[0].length),
-          y : Math.floor(Math.random() * mapData.length)}
-        console.log("Add an enemy : ", posMob)
-        //enemyList = enemyList.filter((e, i) => i == findIndexEnemy)
-        enemyList.splice(findIndexEnemy, 1)
-        enemyList.push(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
-        
-      }
+        //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
+        while (!engine_check_is_empty_floor(posMob, mapData, textureMapper))
+        {
+          posMob = {x : Math.floor(Math.random() * mapData[0].length),
+            y : Math.floor(Math.random() * mapData.length)}
+          console.log("Add an enemy : ", posMob)
+          //enemyList = enemyList.filter((e, i) => i == findIndexEnemy)
+          enemyList.splice(findIndexEnemy, 1)
+          enemyList.push(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
+        }
      // enemyList = enemyList.filter(enemy => enemy.life > 0)
-    }
+      }
     
 
     // render update
     renderer(ctx, windowDim, mapData, player, enemyList);//{x : 100, y : 100});
   }
-  }
 }
 
 const runDeathScreen = () => {
-
+  //console.log("DEATH SCREEN")
+  canvasUtils.drawText(ctx, "You are death", "blue", {x : 0, y : 0}, "32")
 }
 
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  let player = new Player({ x: 5, y : 5}, 'green', C_CONFIG.player.PLAYER_DMG, C_CONFIG.player.PLAYER_INIT_LIFE, C_CONFIG.player.PLAYER_MAX_LIFE, C_CONFIG.player.PLAYER_SKIN);
+  let player = new Player({ x: 5, y : 5}, 'green', C_CONFIG.PLAYER.PLAYER_DMG, C_CONFIG.PLAYER.PLAYER_INIT_LIFE, C_CONFIG.PLAYER.PLAYER_MAX_LIFE, C_CONFIG.PLAYER.PLAYER_SKIN);
   let enemyList : Enemy[] = [];
 
   enemyList.push(new Enemy({ x: 3, y : 3}, 'red', 0.5, 5, 5, imgMob.mob1));
