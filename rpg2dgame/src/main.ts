@@ -10,7 +10,7 @@ import renderer from './renderer/renderer';
 import C_CONFIG from './config/baseconfig';
 
 import _GlobalGameObject from './core/globalGameObject/GlobalGameObject';
-
+import rendererDeathScreen from './renderer/rendererDeathScreen';
 
 // BASE VARIABLE
 let fps: number = 30;
@@ -41,14 +41,15 @@ const mobGenerator = (dimMap : typesBase.IVec2d) => {
 }
 
 // todo : ugly function need rework
-function runGameLoop(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d, keyboardEvent: KeyboardEventHandler, GlobalGameObject : _GlobalGameObject) {
- // if (!player.isAlive) {
- //   requestAnimationFrame(() => runGameLoop(ctx, windowDim, mapData, player, keyboardEvent, enemyList));
- // }
-//  else {
+function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEventHandler, GlobalGameObject : _GlobalGameObject) {
+  if (!GlobalGameObject.player.isAlive) {
+    requestAnimationFrame(() => runGameLoop(ctx, keyboardEvent, GlobalGameObject));
+    rendererDeathScreen(ctx, GlobalGameObject.gameScreen.windowDim);
+  }
+ else {
   //  console.log("turn")
     // request another animation frame
-    requestAnimationFrame(() => runGameLoop(ctx, windowDim, keyboardEvent, GlobalGameObject));
+    requestAnimationFrame(() => runGameLoop(ctx, keyboardEvent, GlobalGameObject));
 
     now = performance.now();//Date.now();
     elapsed = now - then;
@@ -97,10 +98,10 @@ function runGameLoop(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d,
       }
 
         // render update
-        renderer(ctx, windowDim, GlobalGameObject.map2d, GlobalGameObject.player, GlobalGameObject.enemyList);//{x : 100, y : 100});
+        renderer(ctx, GlobalGameObject.gameScreen.windowDim, GlobalGameObject.map2d, GlobalGameObject.player, GlobalGameObject.enemyList);//{x : 100, y : 100});
       
     }
- // }
+  }
 }
 
 /*
@@ -125,7 +126,7 @@ const initGlobalGameObject = (GlobalGameObject : _GlobalGameObject) => {
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
   
-  let GlobalGameObject = initGlobalGameObject(new _GlobalGameObject());
+  let GlobalGameObject = initGlobalGameObject(new _GlobalGameObject({ x: canvas.width, y: canvas.height }));
   
 
 
@@ -173,7 +174,7 @@ export function initCanvas() {
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();
-    requestAnimationFrame(() => { if (ctx) runGameLoop(ctx, { x: canvas.width, y: canvas.height },  eventHandler, GlobalGameObject) });
+    requestAnimationFrame(() => { if (ctx) runGameLoop(ctx, eventHandler, GlobalGameObject) });
   }
 }
 

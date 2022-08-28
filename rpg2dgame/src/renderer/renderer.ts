@@ -6,7 +6,7 @@ import * as canvasService from './../services/canvas';
  
  
 interface IUIElement {
-  pos : typesBase.IVec2d,
+  pos : typesBase.IVec2d, 
   dim : typesBase.IVec2d
 }
 

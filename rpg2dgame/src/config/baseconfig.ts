@@ -3,7 +3,7 @@ import * as imgPlayer from './../core/texture/playerTexture';
 
 const C_CONFIG = {
     PLAYER : { 
-      PLAYER_INIT_LIFE : 100,
+      PLAYER_INIT_LIFE : 0,
       PLAYER_MAX_LIFE : 100,
       PLAYER_DMG : 40,
       PLAYER_SKIN : imgPlayer.player1
