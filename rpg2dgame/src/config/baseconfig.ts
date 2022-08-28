@@ -8,14 +8,14 @@ const C_CONFIG = {
       PLAYER_DMG : 40,
       PLAYER_SKIN : imgPlayer.player1
     }, 
-    MAP_CONFIG : { 
+    MAP_CONFIG : {
       MAP_HOME : {
         NB_MOBS : 5,
-        MOB_GENERATOR : [() => {}, () => {}]
+        MOB_GENERATOR : [() => {}, () => {}],
       }
     },
     GAME_CONFIG : {
-  
+      FOV : {x : 18, y : 10}
     }
   }
 

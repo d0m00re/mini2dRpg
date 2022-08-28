@@ -97,39 +97,36 @@ function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEvent
         }
       }
 
-        // render update
-        renderer(ctx, GlobalGameObject.gameScreen.windowDim, GlobalGameObject.map2d, GlobalGameObject.player, GlobalGameObject.enemyList);//{x : 100, y : 100});
-      
+        renderer(ctx,
+          GlobalGameObject.gameScreen.windowDim,
+          GlobalGameObject._map2d.map2dWtFOV(GlobalGameObject.player.pos),
+          GlobalGameObject.player,
+          GlobalGameObject.enemyList);
+
     }
   }
 }
-
-/*
-const runDeathScreen = () => {
-  //console.log("DEATH SCREEN")
-  canvasUtils.drawText(ctx, "You are death", "blue", { x: 0, y: 0 }, "32")
-}
-*/
 
 const initGlobalGameObject = (GlobalGameObject : _GlobalGameObject) => {
   GlobalGameObject.player = new Player({ x: 5, y: 5 }, 'green', C_CONFIG.PLAYER.PLAYER_DMG, C_CONFIG.PLAYER.PLAYER_INIT_LIFE, C_CONFIG.PLAYER.PLAYER_MAX_LIFE, C_CONFIG.PLAYER.PLAYER_SKIN);
 
   GlobalGameObject.map2d = firstMap.map2d;
+  // describe fov of map
+  GlobalGameObject._map2d.fieldOfView = C_CONFIG.GAME_CONFIG.FOV;
 
   GlobalGameObject.addEnemy(new Enemy({ x: 3, y: 3 }, 'red', 0.5, 5, 5, imgMob.mob1));
   GlobalGameObject.addEnemy(new Enemy({ x: 6, y: 6 }, 'red', 0.5, 50, 50, imgMob.mob2));
   GlobalGameObject.addEnemy(new Enemy({ x: 10, y: 7 }, 'red', 0.5, 5, 5, imgMob.mob1));
   GlobalGameObject.addEnemy(new Enemy({ x: 12, y: 5 }, 'red', 0.5, 20, 5, imgMob.mob1));
+  GlobalGameObject.addEnemy(new Enemy({ x: 13, y: 15 }, 'red', 0.5, 20, 5, imgMob.mob1));
+
   return GlobalGameObject;
 }
 
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  
   let GlobalGameObject = initGlobalGameObject(new _GlobalGameObject({ x: canvas.width, y: canvas.height }));
   
-
-
   let eventHandler = new KeyboardEventHandler();
   // manage event handler
   document.addEventListener("keydown", (event: KeyboardEvent) => {
