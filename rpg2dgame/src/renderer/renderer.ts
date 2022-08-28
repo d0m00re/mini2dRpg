@@ -71,7 +71,6 @@ const renderPlayer = (ctx : CanvasRenderingContext2D, player : Player, tileDim :
 export default function renderer(ctx : CanvasRenderingContext2D, windowDim : typesBase.IVec2d,
                           mapData : TMap2D, player : Player,  enemyList : Enemy[]) {
 
-                            console.log("renderer")
     let dimCase : typesBase.IVec2d = {x : mapData[0].length, y : mapData.length};
 
     /*

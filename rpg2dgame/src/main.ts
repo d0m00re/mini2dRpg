@@ -7,8 +7,9 @@ import * as imgMob from './core/texture/mobTexture'
 
 import renderer from './renderer/renderer';
 
-import * as canvasUtils from './services/canvas';
 import C_CONFIG from './config/baseconfig';
+
+import _GlobalGameObject from './core/globalGameObject/GlobalGameObject';
 
 
 // BASE VARIABLE
@@ -31,15 +32,23 @@ const engine_check_is_empty_floor = (pos: typesBase.IVec2d, mapData: TMap2D, tex
   return (pos.x === -1 && pos.y === -1) || textureMapper[mapData[pos.y][pos.x]].solid
 }
 
+// generate memeber 
+const mobGenerator = (dimMap : typesBase.IVec2d) => {
+  return {
+    x: Math.floor(Math.random() * dimMap.x),
+    y: Math.floor(Math.random() * dimMap.y)
+  }
+}
+
 // todo : ugly function need rework
-function runGameLoop(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d, mapData: TMap2D, player: Player, keyboardEvent: KeyboardEventHandler, enemyList: Enemy[]) {
+function runGameLoop(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d, keyboardEvent: KeyboardEventHandler, GlobalGameObject : _GlobalGameObject) {
  // if (!player.isAlive) {
  //   requestAnimationFrame(() => runGameLoop(ctx, windowDim, mapData, player, keyboardEvent, enemyList));
  // }
 //  else {
-    console.log("turn")
+  //  console.log("turn")
     // request another animation frame
-    requestAnimationFrame(() => runGameLoop(ctx, windowDim, mapData, player, keyboardEvent, enemyList));
+    requestAnimationFrame(() => runGameLoop(ctx, windowDim, keyboardEvent, GlobalGameObject));
 
     now = performance.now();//Date.now();
     elapsed = now - then;
@@ -48,43 +57,47 @@ function runGameLoop(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d,
     if (elapsed > fpsInterval) {
       then = now - (elapsed % fpsInterval);
 
-      let futurpos = player.futurPos(keyboardEvent.dir);
+      let futurpos = GlobalGameObject.player.futurPos(keyboardEvent.dir);
       // moove player
-      if (textureMapper[mapData[futurpos.y][futurpos.x]].solid === false
-        && enemyList.findIndex(enemy => (enemy.pos.x === futurpos.x && enemy.pos.y === futurpos.y)) < 0)
-        player.moove(keyboardEvent.dir);
+      if (textureMapper[GlobalGameObject.map2d[futurpos.y][futurpos.x]].solid === false
+        && GlobalGameObject.enemyList.findIndex(enemy => (enemy.pos.x === futurpos.x && enemy.pos.y === futurpos.y)) < 0)
+        GlobalGameObject.player.moove(keyboardEvent.dir);
 
       // attack management
 
-      const findIndexEnemy = enemyList.findIndex(elem => elem.pos.x === futurpos.x && elem.pos.y === futurpos.y);
+      const findIndexEnemy = GlobalGameObject.enemyList.findIndex(elem => elem.pos.x === futurpos.x && elem.pos.y === futurpos.y);
 
       // find index of enemy
       if (findIndexEnemy > -1) {
-        console.log("find an enemy : ", findIndexEnemy)
         // enemy dmg
-        enemyList[findIndexEnemy].life -= player.dmg;
-        player.life -= enemyList[findIndexEnemy].dmg;
+        GlobalGameObject.enemyList[findIndexEnemy].life -= GlobalGameObject.player.dmg;
+        GlobalGameObject.player.life -= GlobalGameObject.enemyList[findIndexEnemy].dmg;
 
-        if (!enemyList[findIndexEnemy].isAlive) {
+        if (!GlobalGameObject.enemyList[findIndexEnemy].isAlive) {
+          console.log("mob die : ", findIndexEnemy)
+
           // find pos where add hour peaple
           let posMob = { x: -1, y: -1 };
           //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
-          while (!engine_check_is_empty_floor(posMob, mapData, textureMapper)) {
-            posMob = {
-              x: Math.floor(Math.random() * mapData[0].length),
-              y: Math.floor(Math.random() * mapData.length)
-            }
+          while (!engine_check_is_empty_floor(posMob, GlobalGameObject.map2d, textureMapper)) {
+            //posMob = {
+            //  x: Math.floor(Math.random() * mapData[0].length),
+            //  y: Math.floor(Math.random() * mapData.length)
+            //}
+            posMob = mobGenerator({x : Math.random() * GlobalGameObject.map2d[0].length, y : Math.random() * GlobalGameObject.map2d.length});
             console.log("Add an enemy : ", posMob)
             //enemyList = enemyList.filter((e, i) => i == findIndexEnemy)
-            enemyList.splice(findIndexEnemy, 1)
-            enemyList.push(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
+
           }
+          GlobalGameObject.removeEnemy(findIndexEnemy)
+          GlobalGameObject.addEnemy(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
+          console.log("* add new mob : ", GlobalGameObject.enemyList.length)
           // enemyList = enemyList.filter(enemy => enemy.life > 0)
         }
       }
 
         // render update
-        renderer(ctx, windowDim, mapData, player, enemyList);//{x : 100, y : 100});
+        renderer(ctx, windowDim, GlobalGameObject.map2d, GlobalGameObject.player, GlobalGameObject.enemyList);//{x : 100, y : 100});
       
     }
  // }
@@ -97,15 +110,23 @@ const runDeathScreen = () => {
 }
 */
 
+const initGlobalGameObject = (GlobalGameObject : _GlobalGameObject) => {
+  GlobalGameObject.player = new Player({ x: 5, y: 5 }, 'green', C_CONFIG.PLAYER.PLAYER_DMG, C_CONFIG.PLAYER.PLAYER_INIT_LIFE, C_CONFIG.PLAYER.PLAYER_MAX_LIFE, C_CONFIG.PLAYER.PLAYER_SKIN);
+
+  GlobalGameObject.map2d = firstMap.map2d;
+
+  GlobalGameObject.addEnemy(new Enemy({ x: 3, y: 3 }, 'red', 0.5, 5, 5, imgMob.mob1));
+  GlobalGameObject.addEnemy(new Enemy({ x: 6, y: 6 }, 'red', 0.5, 50, 50, imgMob.mob2));
+  GlobalGameObject.addEnemy(new Enemy({ x: 10, y: 7 }, 'red', 0.5, 5, 5, imgMob.mob1));
+  GlobalGameObject.addEnemy(new Enemy({ x: 12, y: 5 }, 'red', 0.5, 20, 5, imgMob.mob1));
+  return GlobalGameObject;
+}
+
 export function initCanvas() {
   let canvas = document.getElementById("canvas") as HTMLCanvasElement;
-  let player = new Player({ x: 5, y: 5 }, 'green', C_CONFIG.PLAYER.PLAYER_DMG, C_CONFIG.PLAYER.PLAYER_INIT_LIFE, C_CONFIG.PLAYER.PLAYER_MAX_LIFE, C_CONFIG.PLAYER.PLAYER_SKIN);
-  let enemyList: Enemy[] = [];
-
-  enemyList.push(new Enemy({ x: 3, y: 3 }, 'red', 0.5, 5, 5, imgMob.mob1));
-  enemyList.push(new Enemy({ x: 6, y: 6 }, 'red', 0.5, 50, 50, imgMob.mob2));
-  enemyList.push(new Enemy({ x: 10, y: 7 }, 'red', 0.5, 5, 5, imgMob.mob1));
-  enemyList.push(new Enemy({ x: 12, y: 5 }, 'red', 0.5, 20, 5, imgMob.mob1));
+  
+  let GlobalGameObject = initGlobalGameObject(new _GlobalGameObject());
+  
 
 
   let eventHandler = new KeyboardEventHandler();
@@ -152,7 +173,7 @@ export function initCanvas() {
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();
-    requestAnimationFrame(() => { if (ctx) runGameLoop(ctx, { x: canvas.width, y: canvas.height }, firstMap.map2d, player, eventHandler, enemyList) });
+    requestAnimationFrame(() => { if (ctx) runGameLoop(ctx, { x: canvas.width, y: canvas.height },  eventHandler, GlobalGameObject) });
   }
 }
 
