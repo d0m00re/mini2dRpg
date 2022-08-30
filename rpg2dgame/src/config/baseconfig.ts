@@ -3,9 +3,9 @@ import * as imgPlayer from './../core/texture/playerTexture';
 
 const C_CONFIG = {
     PLAYER : { 
-      PLAYER_INIT_LIFE : 10,
+      PLAYER_INIT_LIFE : 100,
       PLAYER_MAX_LIFE : 100,
-      PLAYER_DMG : 40,
+      PLAYER_DMG : 2,
       PLAYER_SKIN : imgPlayer.player1
     }, 
     MAP_CONFIG : {
@@ -15,7 +15,7 @@ const C_CONFIG = {
       }
     },
     GAME_CONFIG : {
-      FOV : {x : 18, y : 10}
+      FOV : {x : 25, y : 15}
     }
   }
 

@@ -3,6 +3,8 @@ import * as typesBase from "./core/types/base.d";
 import Player from './core/entities/Player';
 import Enemy from './core/entities/Enemy';
 import KeyboardEventHandler from './services/eventHandler/KeyboardEventHandler';
+import MobSpawner from './core/entities/MobSpawner';
+
 import * as imgMob from './core/texture/mobTexture'
 
 import renderer from './renderer/renderer';
@@ -61,49 +63,27 @@ function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEvent
       let futurpos = GlobalGameObject.player.futurPos(keyboardEvent.dir);
       // moove player
       if (textureMapper[GlobalGameObject.map2d[futurpos.y][futurpos.x]].solid === false
-        && GlobalGameObject.enemyList.findIndex(enemy => (enemy.pos.x === futurpos.x && enemy.pos.y === futurpos.y)) < 0)
+         && GlobalGameObject.mobSpawnerList.findEnemyIndex(futurpos) === null)
         GlobalGameObject.player.moove(keyboardEvent.dir);
 
-      // attack management
+      // todo : futur loop on all this element
+      GlobalGameObject.runFight(futurpos)
+      GlobalGameObject.gameLoop()
 
-      const findIndexEnemy = GlobalGameObject.enemyList.findIndex(elem => elem.pos.x === futurpos.x && elem.pos.y === futurpos.y);
-
-      // find index of enemy
-      if (findIndexEnemy > -1) {
-        // enemy dmg
-        GlobalGameObject.enemyList[findIndexEnemy].life -= GlobalGameObject.player.dmg;
-        GlobalGameObject.player.life -= GlobalGameObject.enemyList[findIndexEnemy].dmg;
-
-        if (!GlobalGameObject.enemyList[findIndexEnemy].isAlive) {
-          console.log("mob die : ", findIndexEnemy)
-
-          // find pos where add hour peaple
-          let posMob = { x: -1, y: -1 };
-          //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
-          while (!engine_check_is_empty_floor(posMob, GlobalGameObject.map2d, textureMapper)) {
-            //posMob = {
-            //  x: Math.floor(Math.random() * mapData[0].length),
-            //  y: Math.floor(Math.random() * mapData.length)
-            //}
-            posMob = mobGenerator({x : Math.random() * GlobalGameObject.map2d[0].length, y : Math.random() * GlobalGameObject.map2d.length});
-            console.log("Add an enemy : ", posMob)
-            //enemyList = enemyList.filter((e, i) => i == findIndexEnemy)
-
-          }
-          GlobalGameObject.removeEnemy(findIndexEnemy)
-          GlobalGameObject.addEnemy(new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2));
-          console.log("* add new mob : ", GlobalGameObject.enemyList.length)
-          // enemyList = enemyList.filter(enemy => enemy.life > 0)
-        }
-      }
-
+/*
         renderer(ctx,
           GlobalGameObject.gameScreen.windowDim,
           GlobalGameObject._map2d.map2dWtFOV(GlobalGameObject.player.pos),
           GlobalGameObject.player,
           GlobalGameObject.enemyList);
-
-    }
+        }
+*/
+        renderer(ctx,
+          GlobalGameObject.gameScreen.windowDim,
+          GlobalGameObject._map2d.map2dWtFOV(GlobalGameObject.player.pos),
+          GlobalGameObject.player,
+          GlobalGameObject.mobSpawnerList);
+        }
   }
 }
 
@@ -114,11 +94,10 @@ const initGlobalGameObject = (GlobalGameObject : _GlobalGameObject) => {
   // describe fov of map
   GlobalGameObject._map2d.fieldOfView = C_CONFIG.GAME_CONFIG.FOV;
 
-  GlobalGameObject.addEnemy(new Enemy({ x: 3, y: 3 }, 'red', 0.5, 5, 5, imgMob.mob1));
-  GlobalGameObject.addEnemy(new Enemy({ x: 6, y: 6 }, 'red', 0.5, 50, 50, imgMob.mob2));
-  GlobalGameObject.addEnemy(new Enemy({ x: 10, y: 7 }, 'red', 0.5, 5, 5, imgMob.mob1));
-  GlobalGameObject.addEnemy(new Enemy({ x: 12, y: 5 }, 'red', 0.5, 20, 5, imgMob.mob1));
-  GlobalGameObject.addEnemy(new Enemy({ x: 13, y: 15 }, 'red', 0.5, 20, 5, imgMob.mob1));
+  GlobalGameObject.addMobSpawner(new MobSpawner(10, {start : {x : 5, y : 5}, end : {x : 10, y : 10}}));
+  GlobalGameObject.addMobSpawner(new MobSpawner(10, {start : {x : 10, y : 10}, end : {x : 20, y : 20}}));
+  GlobalGameObject.addMobSpawner(new MobSpawner(10, {start : {x : 20, y : 10}, end : {x : 25, y : 20}}));
+
 
   return GlobalGameObject;
 }
@@ -156,18 +135,18 @@ export function initCanvas() {
 
 
   if (!canvas) {
-    console.log("error init canvas");
+   // console.log("error init canvas");
     return;
   }
 
   if (canvas.getContext) {
     let ctx = canvas.getContext("2d");
     if (!ctx) {
-      console.log("error init ctx");
+   //   console.log("error init ctx");
       return;
     }
 
-    console.log(C_CONFIG)
+   // console.log(C_CONFIG)
     //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();

@@ -48,7 +48,7 @@ const renderGraphicElement = (ctx : CanvasRenderingContext2D, uiElem : any) => {
     for (let i = 0; i < uiElem.length; i++) {     
         switch (uiElem[i].typeElem) {
             case 'text' :
-                console.log(uiElem[i].label)
+             //   console.log(uiElem[i].label)
                 canvasService.drawText(ctx, uiElem[i].label, uiElem[i].fill, uiElem[i].pos);
             break;
             case 'button' :

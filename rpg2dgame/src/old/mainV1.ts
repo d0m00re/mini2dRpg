@@ -94,7 +94,7 @@ export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
     const widthCase = dim.x / dimCase.x;
     const heightCase = dim.y / dimCase.y;
 
-    console.log(widthCase, ' ', heightCase);                
+   // console.log(widthCase, ' ', heightCase);                
 
     // base map
     for (let y = 0; y < dimCase.y; y++) {
@@ -112,7 +112,7 @@ export function render(ctx : CanvasRenderingContext2D, dim : IVec2d,
     let baseY = heightCase * player.pos.y;
     ctx.fillRect(baseX, baseY,
                 widthCase, heightCase);
-    console.log("Draw player : ", baseX, baseY, widthCase, heightCase)
+  //  console.log("Draw player : ", baseX, baseY, widthCase, heightCase)
 }
 
 function runGameLoop(ctx : CanvasRenderingContext2D, dim : IVec2d, mapData : IMap2d, player : Player, keyboardEvent : KeyboardEventHandler) {

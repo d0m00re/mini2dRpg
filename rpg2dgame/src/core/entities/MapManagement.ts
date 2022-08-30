@@ -22,9 +22,9 @@ class MapManagement {
         let startPos = {x : pos.x - fovMiddle.x,
                         y : pos.y - fovMiddle.y};
 
-        console.log("Pos player")
-        console.log(pos);
-        console.log(startPos)
+     //   console.log("Pos player")
+     //   console.log(pos);
+     //   console.log(startPos)
 
         // few case to manage
         // when we are on the top of the map
@@ -50,24 +50,18 @@ class MapManagement {
     public findIntervalPos(pos : baseTypes.IVec2d) {
         let fov = this._fieldOfView;
         let fovMiddle : baseTypes.IVec2d = {x : fov.x / 2, y : fov.y / 2}
+
+        // first pos calculation
         let startPos = {x : pos.x - fovMiddle.x,
                         y : pos.y - fovMiddle.y};
         let endPos = {x : startPos.x + fov.x,
                       y : startPos.y + fov.y}
-
-        console.log("Pos player")
-        console.log(pos);
-        console.log(startPos)
-
         // few case to manage
         // when we are on the top of the map
         // top
         if (startPos.x < 0) startPos.x = 0;
         if (startPos.y < 0) startPos.y = 0;
         // end pos calcul
-
-        //let endPos = {x : startPos.x + fovMiddle.x,
-        //              y : startPos.y + fovMiddle.y};
         
         if (endPos.x > this._map2d[0].length)
             startPos.x = this._map2d[0].length - fov.x;

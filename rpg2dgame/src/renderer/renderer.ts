@@ -3,7 +3,7 @@ import * as typesBase from "./../core/types/base.d";
 import Player from './../core/entities/Player';
 import Enemy from './../core/entities/Enemy';
 import * as canvasService from './../services/canvas';
-
+import MobSpawnerList from './../core/entities/MobSpawnerList'
 interface IInterval {
   start: {
     x: number;
@@ -93,7 +93,7 @@ const checkPositionInsideInterval = (interval : IInterval, targetPos : typesBase
 }
 
 export default function renderer(ctx: CanvasRenderingContext2D, windowDim: typesBase.IVec2d,
-  mapData: IMapInformation, player: Player, enemyList: Enemy[]) {
+  mapData: IMapInformation, player: Player, mobSpawnerList: MobSpawnerList) {
 
   let dimCase: typesBase.IVec2d = { x: mapData.map2d[0].length, y: mapData.map2d.length };
 
@@ -125,9 +125,10 @@ export default function renderer(ctx: CanvasRenderingContext2D, windowDim: types
   renderMap(ctx, dimCase, mapData.map2d, tileDim);
 
   // enemy rendering
-  let _enemyList = enemyList.filter(enemy => checkPositionInsideInterval(mapData.intervalPos, enemy.pos))
-  renderEnemy(ctx, _enemyList, tileDim, mapData.intervalPos.start);
-
+  for (let i = 0; i < mobSpawnerList.enemyList.length; i++) {
+    let _enemyList = mobSpawnerList.enemyList[i].enemyList.filter(enemy => checkPositionInsideInterval(mapData.intervalPos, enemy.pos))
+    renderEnemy(ctx, _enemyList, tileDim, mapData.intervalPos.start);
+  }
   // draw player
   renderPlayer(
     ctx,
