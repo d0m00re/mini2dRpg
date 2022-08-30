@@ -1,12 +1,7 @@
-import { textureMapper, firstMap, TMap2D, ILayerWallFloorTexture } from './core/MapSystem/layerFloorWall';
-import * as typesBase from "./core/types/base.d";
+import { textureMapper, firstMap } from './core/MapSystem/layerFloorWall';
 import Player from './core/entities/Player';
-import Enemy from './core/entities/Enemy';
 import KeyboardEventHandler from './services/eventHandler/KeyboardEventHandler';
 import MobSpawner from './core/entities/MobSpawner';
-
-import * as imgMob from './core/texture/mobTexture'
-
 import renderer from './renderer/renderer';
 
 import C_CONFIG from './config/baseconfig';
@@ -29,19 +24,6 @@ function initAnimation() {
   console.log(startTime);
 }
 
-// todo : add mob and player
-const engine_check_is_empty_floor = (pos: typesBase.IVec2d, mapData: TMap2D, textureMapper: { [x: number]: ILayerWallFloorTexture }) => {
-  return (pos.x === -1 && pos.y === -1) || textureMapper[mapData[pos.y][pos.x]].solid
-}
-
-// generate memeber 
-const mobGenerator = (dimMap : typesBase.IVec2d) => {
-  return {
-    x: Math.floor(Math.random() * dimMap.x),
-    y: Math.floor(Math.random() * dimMap.y)
-  }
-}
-
 // todo : ugly function need rework
 function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEventHandler, GlobalGameObject : _GlobalGameObject) {
   if (!GlobalGameObject.player.isAlive) {
@@ -49,7 +31,6 @@ function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEvent
     rendererDeathScreen(ctx, GlobalGameObject.gameScreen.windowDim);
   }
  else {
-  //  console.log("turn")
     // request another animation frame
     requestAnimationFrame(() => runGameLoop(ctx, keyboardEvent, GlobalGameObject));
 
@@ -70,14 +51,6 @@ function runGameLoop(ctx: CanvasRenderingContext2D, keyboardEvent: KeyboardEvent
       GlobalGameObject.runFight(futurpos)
       GlobalGameObject.gameLoop()
 
-/*
-        renderer(ctx,
-          GlobalGameObject.gameScreen.windowDim,
-          GlobalGameObject._map2d.map2dWtFOV(GlobalGameObject.player.pos),
-          GlobalGameObject.player,
-          GlobalGameObject.enemyList);
-        }
-*/
         renderer(ctx,
           GlobalGameObject.gameScreen.windowDim,
           GlobalGameObject._map2d.map2dWtFOV(GlobalGameObject.player.pos),
@@ -135,19 +108,17 @@ export function initCanvas() {
 
 
   if (!canvas) {
-   // console.log("error init canvas");
+    console.error("error init canvas");
     return;
   }
 
   if (canvas.getContext) {
     let ctx = canvas.getContext("2d");
     if (!ctx) {
-   //   console.log("error init ctx");
+      console.error("error init ctx");
       return;
     }
 
-   // console.log(C_CONFIG)
-    //drawMap2d(ctx, {x : canvas.width, y : canvas.height}, map2d, player);//{x : 100, y : 100});
     //@ts-ignore
     initAnimation();
     requestAnimationFrame(() => { if (ctx) runGameLoop(ctx, eventHandler, GlobalGameObject) });
