@@ -12,7 +12,7 @@ import {IMobDefinition} from "./../../config/monster";
 ** maintain own list of mob and spawn it if require
 */
 
-interface IInterval {
+export interface IInterval {
     start : typesBase.IVec2d;
     end : typesBase.IVec2d;
 }
@@ -52,6 +52,8 @@ class MobSpawner {
 
     get enemyList() : Enemy[] { return this._enemyList}
     set enemyList(enemyList : Enemy[]) {this._enemyList = enemyList}
+
+    get mobDefinition() : IMobDefinition {return this._mobDefinition}
 
     // find enemy index
     // - 1 : no enemy

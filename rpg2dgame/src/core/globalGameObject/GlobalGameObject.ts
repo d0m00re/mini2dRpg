@@ -21,14 +21,6 @@ const textureMapper : TTextureMapper = {
   [texture.SecondWall.id] : texture.SecondWall
 }
 
-  // generate memeber 
-  const mobGenerator = (dimMap : baseTypes.IVec2d) => {
-    return {
-      x: Math.floor(Math.random() * dimMap.x),
-      y: Math.floor(Math.random() * dimMap.y)
-    }
-  }
-
 class GlobalGameObject {
     private _player : Player;
     private _enemyList : Enemy[];
@@ -103,15 +95,10 @@ class GlobalGameObject {
         this.player.life -= currentSpawner.enemyList[indexEnm].dmg;
       
       // todo : last action - we should add some security for position injection
-      
+      // delete mob
       if (!currentSpawner.enemyList[indexEnm].isAlive) {
-
-        // find pos where add hour peaple
-        let posMob = { x: -1, y: -1 };
-        //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
-        while (!this.engine_check_empty_pos(posMob)) {
-          posMob = mobGenerator({x : Math.random() * this.map2d[0].length, y : Math.random() * this.map2d.length});
-        }
+       // currentSpawner.mobDefinition.
+        this._player._allLevel.fight.addXp(currentSpawner.mobDefinition.xp)
         currentSpawner.deleteWtIndex(indexEnm)
       }
       

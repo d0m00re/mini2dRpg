@@ -70,6 +70,11 @@ const renderUiBottom = (ctx: CanvasRenderingContext2D, bottomUiInfo: IUIElement,
     { x: bottomUiInfo.pos.x + 50, y: bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2) });
   canvasService.drawText(ctx, `Dmg : ${player.dmg}`, "blue",
     { x: bottomUiInfo.pos.x + 50, y: bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 + 50) });
+
+    canvasService.drawText(ctx, `Level : ${player._allLevel.fight.currentLevel}`, "black",
+    { x: bottomUiInfo.pos.x + 400, y: bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2) });
+    canvasService.drawText(ctx, `Xp : ${player._allLevel.fight.currentXp}/${player._allLevel.fight.nextXpLevel}`, "black",
+    { x: bottomUiInfo.pos.x + 400, y: bottomUiInfo.pos.y + (bottomUiInfo.dim.y / 2 + 50) });
 }
 
 const renderPlayer = (ctx: CanvasRenderingContext2D, player: Player, tileDim: typesBase.IVec2d, mapPosStart : typesBase.IVec2d) => {

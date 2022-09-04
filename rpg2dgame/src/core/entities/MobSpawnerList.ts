@@ -14,7 +14,7 @@ interface IEnemyPositionSpawner {
     spawnerIndex : number;
     monsterIndex : number;
 }
-
+ 
 class MobSpawnerList {
     private _mapSpawnerList : MobSpawner[];
      // private _enemyTemplate : [{level : number, spawnChance : number}]
