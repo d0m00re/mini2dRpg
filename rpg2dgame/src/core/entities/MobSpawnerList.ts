@@ -8,6 +8,7 @@ import MobSpawner from './MobSpawner';
 import * as imgMob from './../../core/texture/mobTexture'
 import * as typesBase from "./../types/base.d";
 import Enemy from './Enemy';
+import {IVec2d} from './../types/base';
 
 interface IEnemyPositionSpawner {
     spawnerIndex : number;
@@ -62,8 +63,6 @@ class MobSpawnerList {
         this._mapSpawnerList[positionMob.spawnerIndex].deleteWtIndex(positionMob.monsterIndex);
         return true;
     }
-    
- 
 
     //
     gameLoop () {

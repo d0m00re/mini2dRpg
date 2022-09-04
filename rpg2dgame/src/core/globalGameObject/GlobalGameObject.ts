@@ -1,6 +1,3 @@
-import { textureMapper, firstMap, TMap2D, ILayerWallFloorTexture } from './../../core/MapSystem/layerFloorWall';
-
-
 import Player from './../../core/entities/Player';
 import Enemy from './../../core/entities/Enemy';
 import GameScreen from './../../core/entities/GameScreen'
@@ -9,13 +6,18 @@ import C_CONFIG from './../../config/baseconfig';
 import * as baseTypes from './../types/base';
 import MobSpawner from './../entities/MobSpawner';
 import MobSpawnerList from './../entities/MobSpawnerList';
-import * as imgMob from './../../core/texture/mobTexture'
+import * as texture from '../texture/mapTexture';
 
-// todo : add mob and player
-const engine_check_is_empty_floor = (pos: baseTypes.IVec2d, mapData: TMap2D, textureMapper: { [x: number]: ILayerWallFloorTexture }) => {
-    return (pos.x === -1 && pos.y === -1) || textureMapper[mapData[pos.y][pos.x]].solid
-  }
-  
+type TTextureMapper = {
+  [x: number]: texture.ILayerWallFloorTexture;
+}
+const textureMapper : TTextureMapper = {
+  [texture.FirstFloor.id] : texture.FirstFloor,
+  [texture.FirstWall.id] : texture.FirstWall,
+  [texture.SecondFloor.id] : texture.SecondFloor,
+  [texture.SecondWall.id] : texture.SecondWall
+}
+
   // generate memeber 
   const mobGenerator = (dimMap : baseTypes.IVec2d) => {
     return {
@@ -30,14 +32,16 @@ class GlobalGameObject {
     private _mobSpawnerList : MobSpawnerList;
     public _map2d : MapManagement;
     private _gameScreen : GameScreen;
+    private _textureMapper : TTextureMapper;
+    //private _textureMapper : [x: number]: texture.ILayerWallFloorTexture
 
-    constructor (dimMap : baseTypes.IVec2d) {
+    constructor () {
         this._player = new Player({ x: 5, y: 5 }, 'green', C_CONFIG.PLAYER.PLAYER_DMG, C_CONFIG.PLAYER.PLAYER_INIT_LIFE, C_CONFIG.PLAYER.PLAYER_MAX_LIFE, C_CONFIG.PLAYER.PLAYER_SKIN);
         this._enemyList = [];
         this._map2d = new MapManagement({x : 10, y : 10});
-        this._gameScreen = new GameScreen(dimMap);
         this._mobSpawnerList = new MobSpawnerList();
-    }
+        this._textureMapper = textureMapper;
+      }
 
     /*
     get () : any { return this._}
@@ -58,6 +62,9 @@ class GlobalGameObject {
 
     get mobSpawnerList() : MobSpawnerList { return this._mobSpawnerList}
     set mobSpawnerList(mobSpawnerList : MobSpawnerList) {this._mobSpawnerList = mobSpawnerList}
+
+    get textureMapper() : TTextureMapper { return this._textureMapper}
+    set textureMapper(textureMapper : TTextureMapper) {this._textureMapper = textureMapper;}
 
     // create an enemylist class
 
@@ -97,7 +104,7 @@ class GlobalGameObject {
         // find pos where add hour peaple
         let posMob = { x: -1, y: -1 };
         //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
-        while (!engine_check_is_empty_floor(posMob, this.map2d, textureMapper)) {
+        while (!this.engine_check_empty_pos(posMob)) {
           //posMob = {
           //  x: Math.floor(Math.random() * mapData[0].length),
           //  y: Math.floor(Math.random() * mapData.length)
@@ -115,6 +122,38 @@ class GlobalGameObject {
     }
   }
 
+  // check empty game loop
+  // todo : add mob and player
+
+    engine_check_empty_pos = (targetPos : baseTypes.IVec2d) => {
+      //first target pos
+      if (targetPos.y < 0 || targetPos.x < 0)
+      {
+        console.log(targetPos)
+        return false;
+      }
+      
+      // pos player
+      if (this._player.pos.x === targetPos.x && this._player.pos.y === targetPos.y)
+      {
+       // console.log("trigger pos player find")
+        return false;
+      }
+      // map wap wall
+      if ( this.textureMapper[this._map2d.map2d[targetPos.y][targetPos.x]].solid) {
+     //   console.log("trigger tetxure mapper find")
+        return false;
+      }
+      // pos mob
+      if (this._mobSpawnerList.checkPosEmpty(targetPos))
+      {
+     //   console.log("trigger check post empty")
+        return false;
+      }
+      return true;
+
+
+    }
     // game loop
     gameLoop() {
         this._mobSpawnerList.gameLoop();

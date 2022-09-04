@@ -22,10 +22,6 @@ class MapManagement {
         let startPos = {x : pos.x - fovMiddle.x,
                         y : pos.y - fovMiddle.y};
 
-     //   console.log("Pos player")
-     //   console.log(pos);
-     //   console.log(startPos)
-
         // few case to manage
         // when we are on the top of the map
         // top

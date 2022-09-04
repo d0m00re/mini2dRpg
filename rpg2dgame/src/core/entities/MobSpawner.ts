@@ -71,9 +71,6 @@ class MobSpawner {
 
     //
     gameLoop () {
-      //  if (this._enemyList.length < this._maxMobSpawn) {
-            // generate some monster
-            //new Enemy(posMob, 'red', 0.5, 5, 5, imgMob.mob2)
             while (this._enemyList.length < this._maxMobSpawn) {
                 let newPos = randomVec2d(subVec2d(this._interval.end, this._interval.start));
                 newPos = addVec2d(this._interval.start, newPos);
@@ -81,15 +78,14 @@ class MobSpawner {
                 // check valid position
                 // check floor map
                 // check no enemy
+              //  checkEmpty(newPos) 
+
                 if (this.findEnemyIndex(newPos) === -1) { 
+               // if (checkEmpty(newPos)){
                     let newEnemy = new Enemy(newPos, 'red', 0.5, 5, 5, imgMob.mob2)
                     this._enemyList.push(newEnemy);
                 }
-             //   console.log("enemy list: ")
-             //   console.log(this._enemyList)
             }
-         //   console.log("Mob map : ");
-        //    console.log(this._enemyList)
         }
    // }
 }
