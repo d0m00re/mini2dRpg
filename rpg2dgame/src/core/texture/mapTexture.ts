@@ -12,8 +12,8 @@
 
 import imgUrlToHTMLImageElement from './imgUrlToHTMLImageElement';
 
-let floor2 = imgUrlToHTMLImageElement('/mapTexture/floor2.jpg');
-let floorMaze = imgUrlToHTMLImageElement('/mapTexture/floorMaze.jpg');
+let floor2 = imgUrlToHTMLImageElement('/mapTexture/floor2.png');
+let floorMaze = imgUrlToHTMLImageElement('/mapTexture/floorMaze.png');
 let wall = imgUrlToHTMLImageElement('/mapTexture/wall.webp');
 let wall2 = imgUrlToHTMLImageElement('/mapTexture/wall2.jpg');
 

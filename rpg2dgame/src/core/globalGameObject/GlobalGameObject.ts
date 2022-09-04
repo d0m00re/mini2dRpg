@@ -7,6 +7,9 @@ import * as baseTypes from './../types/base';
 import MobSpawner from './../entities/MobSpawner';
 import MobSpawnerList from './../entities/MobSpawnerList';
 import * as texture from '../texture/mapTexture';
+import KeyboardEventHandler from '../../services/eventHandler/KeyboardEventHandler';
+import renderer from './../../renderer/renderer';
+
 
 type TTextureMapper = {
   [x: number]: texture.ILayerWallFloorTexture;
@@ -33,6 +36,7 @@ class GlobalGameObject {
     public _map2d : MapManagement;
     private _gameScreen : GameScreen;
     private _textureMapper : TTextureMapper;
+    public keyboardEventHandler : KeyboardEventHandler;
     //private _textureMapper : [x: number]: texture.ILayerWallFloorTexture
 
     constructor () {
@@ -84,7 +88,9 @@ class GlobalGameObject {
     }
 
    // fight state or not
-   runFight (nextPos : baseTypes.IVec2d) {
+   runFight () {
+    let nextPos = this.player.futurPos(this.keyboardEventHandler.dir);
+
     // attack management
 
     const findIndexEnemyAndSpawnerPos = this._mobSpawnerList.findEnemyIndex(nextPos);
@@ -99,24 +105,14 @@ class GlobalGameObject {
       // todo : last action - we should add some security for position injection
       
       if (!currentSpawner.enemyList[indexEnm].isAlive) {
-        //console.log("mob die : ", findIndexEnemy)
 
         // find pos where add hour peaple
         let posMob = { x: -1, y: -1 };
         //while ((posMob.x === -1 && posMob.y === -1) || textureMapper[mapData[posMob.y][posMob.x]].solid)
         while (!this.engine_check_empty_pos(posMob)) {
-          //posMob = {
-          //  x: Math.floor(Math.random() * mapData[0].length),
-          //  y: Math.floor(Math.random() * mapData.length)
-          //}
           posMob = mobGenerator({x : Math.random() * this.map2d[0].length, y : Math.random() * this.map2d.length});
-        //  console.log("Add an enemy : ", posMob)
-          //enemyList = enemyList.filter((e, i) => i == findIndexEnemy)
-
         }
         currentSpawner.deleteWtIndex(indexEnm)
-       // console.log("* add new mob : ", GlobalGameObject.enemyList.length)
-        // enemyList = enemyList.filter(enemy => enemy.life > 0)
       }
       
     }
@@ -126,7 +122,6 @@ class GlobalGameObject {
   // todo : add mob and player
 
     engine_check_empty_pos = (targetPos : baseTypes.IVec2d) => {
-      //first target pos
       if (targetPos.y < 0 || targetPos.x < 0)
       {
         console.log(targetPos)
@@ -136,12 +131,10 @@ class GlobalGameObject {
       // pos player
       if (this._player.pos.x === targetPos.x && this._player.pos.y === targetPos.y)
       {
-       // console.log("trigger pos player find")
         return false;
       }
       // map wap wall
       if ( this.textureMapper[this._map2d.map2d[targetPos.y][targetPos.x]].solid) {
-     //   console.log("trigger tetxure mapper find")
         return false;
       }
       // pos mob
@@ -154,9 +147,27 @@ class GlobalGameObject {
 
 
     }
+
+    updateScreen = (ctx : CanvasRenderingContext2D) => {
+      renderer(ctx,
+        this.gameScreen.windowDim,
+        this._map2d.map2dWtFOV(this.player.pos),
+        this.player,
+        this.mobSpawnerList);
+    }
+
     // game loop
     gameLoop() {
         this._mobSpawnerList.gameLoop();
+    }
+
+    // moove plater
+    moovePlayer() {
+      let futurpos = this.player.futurPos(this.keyboardEventHandler.dir);
+      // moove player
+      if (textureMapper[this.map2d[futurpos.y][futurpos.x]].solid === false
+        && this.mobSpawnerList.findEnemyIndex(futurpos) === null)
+          this.player.moove(this.keyboardEventHandler.dir);
     }
 }
 

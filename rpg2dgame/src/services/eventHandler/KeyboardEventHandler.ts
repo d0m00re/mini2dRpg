@@ -7,22 +7,47 @@ class KeyboardEventHandler {
       this._dir = 'NONE'
     }
 
-    public init () {
+    private resetDir() {
+      this._dir= 'NONE';
+    }
+
+    private setPosWtKey(event: KeyboardEvent) {
+      let key = event.key;
+    
+      switch (key) {
+        case 'ArrowUp':
+          this._dir = 'TOP';
+          break;
+        case 'ArrowDown':
+          this._dir = 'BOTTOM';
+          break;
+        case 'ArrowLeft':
+          this._dir ='LEFT';
+          break;
+        case 'ArrowRight':
+          this._dir = 'RIGHT';
+          break;
+      }
+    }
+
+    init () {
+      console.log("init")
       document.addEventListener("keydown", (event: KeyboardEvent) => {
         let key = event.key;
-    
+        console.log("Turn : ", key)
+      
         switch (key) {
           case 'ArrowUp':
             this._dir = 'TOP';
             break;
           case 'ArrowDown':
-            this._dir= 'BOTTOM';
+            this._dir = 'BOTTOM';
             break;
           case 'ArrowLeft':
-            this._dir='LEFT';
+            this._dir ='LEFT';
             break;
           case 'ArrowRight':
-            this._dir= 'RIGHT';
+            this._dir = 'RIGHT';
             break;
         }
       })
@@ -31,11 +56,12 @@ class KeyboardEventHandler {
       })
     }
 
-    public destroy () {
-      
+    destroy () {
+      document.removeEventListener("keydown", this.setPosWtKey);
+      document.addEventListener("keyup", this.resetDir)
     }
   
-    get dir() : typesBase.T_DIR { return this._dir}
+    get dir() : typesBase.T_DIR {return this._dir}
     set dir(dir : typesBase.T_DIR) {this._dir = dir}
   };
 

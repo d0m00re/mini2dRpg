@@ -5,9 +5,8 @@
 */
 
 import Enemy from './Enemy';
-import * as imgMob from './../../core/texture/mobTexture'
 import * as typesBase from "./../types/base.d";
-
+import {IMobDefinition} from "./../../config/monster";
 
 /*
 ** maintain own list of mob and spawn it if require
@@ -38,15 +37,17 @@ const addVec2d = (a : typesBase.IVec2d, b : typesBase.IVec2d) => {
 ** moore easier for managing mob region
 */
 class MobSpawner {
+    private _mobDefinition : IMobDefinition;
     private _maxMobSpawn : number;
     private _interval : IInterval;
     private _enemyList : Enemy[];
    // private _enemyTemplate : [{level : number, spawnChance : number}]
 
-    constructor (maxMobSpawn : number, interval : IInterval) {
+    constructor (maxMobSpawn : number, interval : IInterval, mobDefinition : IMobDefinition) {
         this._maxMobSpawn = maxMobSpawn;
         this._interval = interval;
         this._enemyList = [];
+        this._mobDefinition = mobDefinition;
     }
 
     get enemyList() : Enemy[] { return this._enemyList}
@@ -79,10 +80,14 @@ class MobSpawner {
                 // check floor map
                 // check no enemy
               //  checkEmpty(newPos) 
-
+                // use mob definition for getting this one
                 if (this.findEnemyIndex(newPos) === -1) { 
                // if (checkEmpty(newPos)){
-                    let newEnemy = new Enemy(newPos, 'red', 0.5, 5, 5, imgMob.mob2)
+                    let newEnemy = new Enemy(newPos, 'useless',
+                                            this._mobDefinition.dmg,
+                                            this._mobDefinition.maxLife,
+                                            this._mobDefinition.maxLife,
+                                            this._mobDefinition.imgMob)
                     this._enemyList.push(newEnemy);
                 }
             }

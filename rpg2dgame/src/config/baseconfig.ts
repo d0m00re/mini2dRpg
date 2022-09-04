@@ -15,7 +15,7 @@ const C_CONFIG = {
       }
     },
     GAME_CONFIG : {
-      FOV : {x : 25, y : 15}
+      FOV : {x : 15, y : 10}
     }
   }
 
