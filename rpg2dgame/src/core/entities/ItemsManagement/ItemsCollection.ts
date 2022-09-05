@@ -5,7 +5,14 @@ interface IItem  {
     name : string;
     img : string;
     type : "ressource" | "items" | "jobType";
-    craftReccipe : string[];
+    craftRecipe : string[];
+}
+
+interface IITemImport {
+    name : string;
+    img : HTMLImageElement;
+    type : "ressource" | "items" | "jobType";
+    craftRecipe : string[];
 }
 
 class ItemsCollection {
