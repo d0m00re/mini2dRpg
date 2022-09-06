@@ -10,6 +10,8 @@ import * as texture from '../texture/mapTexture';
 import KeyboardEventHandler from '../../services/eventHandler/KeyboardEventHandler';
 import renderer from './../../renderer/renderer';
 
+import ItemsCollection from './../entities/ItemsManagement/ItemsCollection';
+import DropTable from './../entities/ItemsManagement/Droptable';
 
 type TTextureMapper = {
   [x: number]: texture.ILayerWallFloorTexture;
@@ -29,6 +31,10 @@ class GlobalGameObject {
     private _gameScreen : GameScreen;
     private _textureMapper : TTextureMapper;
     public keyboardEventHandler : KeyboardEventHandler;
+
+    public _itemsCollection : ItemsCollection;
+    public _dropTable : DropTable;
+
     //private _textureMapper : [x: number]: texture.ILayerWallFloorTexture
 
     constructor () {
@@ -37,12 +43,17 @@ class GlobalGameObject {
         this._map2d = new MapManagement({x : 10, y : 10});
         this._mobSpawnerList = new MobSpawnerList();
         this._textureMapper = textureMapper;
+        this._itemsCollection = new ItemsCollection();
+        this._dropTable = new DropTable();
       }
 
     /*
     get () : any { return this._}
     set ( : any) {this._ = }
     */
+
+    get itemsCollection() : ItemsCollection { return this._itemsCollection}
+    set itemsCollection(itemsCollection : ItemsCollection) {this._itemsCollection = itemsCollection}
 
     get player() : Player { return this._player}
     set player(player : Player) {this._player = player}

@@ -35,6 +35,10 @@ class ItemsCollection {
         if (itemIndex === -1) return null;
         return this._itemList[itemIndex];
     }
+
+    push = (list : any[]) => {
+        console.log("Load all items collection", list)
+    }
 }
 
 export default ItemsCollection;

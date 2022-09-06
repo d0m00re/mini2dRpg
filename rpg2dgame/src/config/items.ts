@@ -1,24 +1,28 @@
 const itemsList = [
     {
-        name : "test1",
+        id : 0,
+        name : "item1",
         img : '',
         type : 'ressource',
         craftReccipe : []
     },
     {
-        name : "test1",
+        id : 1,
+        name : "item2",
         img : '',
         type : 'ressource',
         craftReccipe : []
     },
     {
-        name : "test1",
+        id : 2,
+        name : "item3",
         img : '',
         type : 'ressource',
         craftReccipe : []
     },
     {
-        name : "test1",
+        id : 3,
+        name : "items4",
         img : '',
         type : 'ressource',
         craftReccipe : []

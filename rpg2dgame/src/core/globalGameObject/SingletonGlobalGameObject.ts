@@ -7,11 +7,9 @@ import KeyboardEventHandler from './../../services/eventHandler/KeyboardEventHan
 import getOneMonsterWithName from './../../config/monster';
 import {TMob} from './../../config/monster';
 import getSpawnerDataList from './../../config/mobSpawnerData';
-interface ISpawnerData {
-    monsterName: TMob;
-    interval : IInterval;
-    nbEnemies : number;
-}
+
+import dropTable from "../../config/dropTable";
+import items from "../../config/items";
 
 const spawnerDataList = getSpawnerDataList("futur update");
 
@@ -28,6 +26,12 @@ const initGlobalGameObject = ( GlobalGameObject: _GlobalGameObject) => {
 
     GlobalGameObject.keyboardEventHandler = new KeyboardEventHandler();
     GlobalGameObject.keyboardEventHandler.init();
+
+    // load items
+    // items collections
+    GlobalGameObject.itemsCollection.push(items); 
+    GlobalGameObject._dropTable.push(dropTable);
+
 
     return GlobalGameObject;
 }
