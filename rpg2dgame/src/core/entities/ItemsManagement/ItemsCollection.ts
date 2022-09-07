@@ -1,18 +1,35 @@
+import imgUrlToHTMLImageElement from './imgUrlToHTMLImageElement';
+
+
 // store an array of items :
 // probably should use an hash table for improving research time
 
 interface IItem  {
-    name : string;
-    img : string;
-    type : "ressource" | "items" | "jobType";
-    craftRecipe : string[];
-}
-
-interface IITemImport {
+    id : number
     name : string;
     img : HTMLImageElement;
-    type : "ressource" | "items" | "jobType";
-    craftRecipe : string[];
+    type : "ressource" | "items" | "jobType" | string;
+    craftRecipe : number[];
+}
+
+interface ILoadData {
+    id : number;
+    name : string;
+    img : string;
+    type : string;
+    craftRecipe : number[]
+}
+
+const iLoadDataToItem = (props : ILoadData) : IItem => {
+    let img = imgUrlToHTMLImageElement(props.img);
+    
+    return {
+        id : props.id,
+        name : props.name,
+        img : img,
+        type : props.type,
+        craftRecipe : props.craftRecipe
+    }
 }
 
 class ItemsCollection {
@@ -36,8 +53,14 @@ class ItemsCollection {
         return this._itemList[itemIndex];
     }
 
-    push = (list : any[]) => {
+    push = (list : ILoadData[]) => {
         console.log("Load all items collection", list)
+ 
+        let listItems = list.map(e => iLoadDataToItem(e));
+        this._itemList = [...this._itemList, ...listItems]
+        //for (let i = 0; i < list.length; i++) {
+//
+ //       }
     }
 }
 

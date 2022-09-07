@@ -4,28 +4,28 @@ const itemsList = [
         name : "item1",
         img : '',
         type : 'ressource',
-        craftReccipe : []
+        craftRecipe : []
     },
     {
         id : 1,
         name : "item2",
         img : '',
         type : 'ressource',
-        craftReccipe : []
+        craftRecipe : []
     },
     {
         id : 2,
         name : "item3",
         img : '',
         type : 'ressource',
-        craftReccipe : []
+        craftRecipe : []
     },
     {
         id : 3,
         name : "items4",
         img : '',
         type : 'ressource',
-        craftReccipe : []
+        craftRecipe : []
     },
 ];
 
