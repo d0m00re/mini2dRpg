@@ -13,6 +13,8 @@ import renderer from './../../renderer/renderer';
 import ItemsCollection from './../entities/ItemsManagement/ItemsCollection';
 import DropTable from './../entities/ItemsManagement/Droptable';
 
+import Inventory from './../entities/ItemsManagement/Inventory';
+
 type TTextureMapper = {
   [x: number]: texture.ILayerWallFloorTexture;
 }
@@ -35,6 +37,8 @@ class GlobalGameObject {
     public _itemsCollection : ItemsCollection;
     public _dropTable : DropTable;
 
+    public inventory : Inventory;
+
     //private _textureMapper : [x: number]: texture.ILayerWallFloorTexture
 
     constructor () {
@@ -45,6 +49,7 @@ class GlobalGameObject {
         this._textureMapper = textureMapper;
         this._itemsCollection = new ItemsCollection();
         this._dropTable = new DropTable();
+        this.inventory = new Inventory();
       }
 
     /*
