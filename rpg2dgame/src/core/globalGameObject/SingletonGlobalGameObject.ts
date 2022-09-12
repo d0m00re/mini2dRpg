@@ -32,6 +32,10 @@ const initGlobalGameObject = ( GlobalGameObject: _GlobalGameObject) => {
     GlobalGameObject.itemsCollection.push(items); 
     GlobalGameObject._dropTable.push(dropTable);
 
+    console.log("Check : ")
+    console.log(GlobalGameObject.itemsCollection);
+    console.log(GlobalGameObject._dropTable)
+
 
     return GlobalGameObject;
 }

@@ -16,6 +16,7 @@ export interface IMobDefinition {
     mooveIa : () => void;
     dropTable : {};
     imgMob : HTMLImageElement;
+    dropTableId : number;
 }
 
 export type TMob = 'trash' | "esgargouille" | "mob1" | "mob2";
@@ -32,7 +33,8 @@ const MobDefinitionList : TMobCollection = {
         xp : 1,
         mooveIa : () => {},
         dropTable : {},
-        imgMob : imgMob.trash
+        imgMob : imgMob.trash,
+        dropTableId : 0
     },
     esgargouille : {
         name : "esgargouille",
@@ -43,7 +45,8 @@ const MobDefinitionList : TMobCollection = {
         xp : 2,
         mooveIa : () => {},
         dropTable : {},
-        imgMob : imgMob.esgargouille
+        imgMob : imgMob.esgargouille,
+        dropTableId : 0
     },
     mob1 : {
         name : "mob1",
@@ -54,7 +57,8 @@ const MobDefinitionList : TMobCollection = {
         xp : 10,
         mooveIa : () => {},
         dropTable : {},
-        imgMob : imgMob.mob1
+        imgMob : imgMob.mob1,
+        dropTableId : 0
     },
     mob2 : {
         name : "mob2",
@@ -65,7 +69,9 @@ const MobDefinitionList : TMobCollection = {
         xp : 50,
         mooveIa : () => {},
         dropTable : {},
-        imgMob : imgMob.mob2
+        imgMob : imgMob.mob2,
+        dropTableId : 0
+
     }};
 
 const getOneMonsterWithName = (mobKey : TMob) => {

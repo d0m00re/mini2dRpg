@@ -1,3 +1,6 @@
+import imgUrlToHTMLImageElement from './../../../core/texture/imgUrlToHTMLImageElement';
+
+
 // store an array of items :
 // probably should use an hash table for improving research time
 
@@ -10,6 +13,15 @@ interface IDroptable {
     id : number;
     name : string;
     items : IItemsDrop[];
+}
+
+const iLoadDataToItem = (props : IDroptable) : IDroptable => {
+   // let img = imgUrlToHTMLImageElement(props.img);
+    return {
+        id : props.id,
+        name : props.name,
+        items : props.items
+    }
 }
 
 class ItemsCollection {
@@ -34,7 +46,17 @@ class ItemsCollection {
     }
 
     push = (list : any[]) => {
-        console.log("Load all drop table", list);
+            console.log("Load all items collection", list)
+     
+            let listItems = list.map(e => iLoadDataToItem(e));
+            this._dropTable = [...this._dropTable, ...listItems]
+    }
+
+    dropSimulation = (dropTableId : number, nbRoll : number = 1) => {
+        //
+        let currentDropTable = this._dropTable[dropTableId];
+        let itemsDrop = currentDropTable.items.map(elem => (Math.random() < elem.dropRate) ? elem.itemId : -1);
+        return itemsDrop.filter(elem => elem !== -1);
     }
 }
 

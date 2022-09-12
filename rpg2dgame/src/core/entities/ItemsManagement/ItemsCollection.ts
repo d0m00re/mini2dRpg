@@ -1,4 +1,4 @@
-import imgUrlToHTMLImageElement from './imgUrlToHTMLImageElement';
+import imgUrlToHTMLImageElement from './../../../core/texture/imgUrlToHTMLImageElement';
 
 
 // store an array of items :
